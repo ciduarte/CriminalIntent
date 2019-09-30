@@ -9,7 +9,7 @@ public class ImageDbSchema {
             public static final String PATH = "path";
             public static final String FACEPATH = "facePath";
             public static final String THUMBNAIL = "thumbnail";
-            public static final String Data = "date"
+            public static final String DATE = "date";
         }
     }
 }
