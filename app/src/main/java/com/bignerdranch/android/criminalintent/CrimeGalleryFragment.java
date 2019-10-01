@@ -1,5 +1,6 @@
 package com.bignerdranch.android.criminalintent;
 
+import java.util.*;
 import android.os.StrictMode;
 import android.app.Activity;
 import android.content.ContentResolver;
@@ -7,6 +8,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -26,6 +28,8 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.GridView;
+import android.widget.BaseAdapter;
 import android.content.Context;
 
 import java.io.File;
@@ -35,6 +39,29 @@ import java.util.UUID;
 public class CrimeGalleryFragment extends Fragment {
 
     private static final String TAG = "GalleryFragment";
+    private ArrayList<Bitmap> crimePhotos = new ArrayList<Bitmap>();
+    public Integer[] images = {
+            R.drawable.image1,
+            R.drawable.image2,
+            R.drawable.image3,
+            R.drawable.image4,
+            R.drawable.image5,
+            R.drawable.image6,
+            R.drawable.image7,
+            R.drawable.image8,
+            R.drawable.image9,
+            R.drawable.image10,
+            R.drawable.image11,
+            R.drawable.image12,
+            R.drawable.image13,
+            R.drawable.image14,
+            R.drawable.image15,
+            R.drawable.image16,
+            R.drawable.image17,
+            R.drawable.image18,
+            R.drawable.image19,
+            R.drawable.image20
+    };
 
     public static CrimeGalleryFragment newInstance() {
         CrimeGalleryFragment fragment = new CrimeGalleryFragment();
@@ -44,13 +71,21 @@ public class CrimeGalleryFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        for (int i=0; i<images.length; i++) {
+            final Bitmap myBitmap = BitmapFactory.decodeResource(getActivity().getApplicationContext().getResources(),images[i]);
+            crimePhotos.add(myBitmap);
+        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_crime_gallery, container, false);
-        return v;
 
+        GridView gridView = (GridView) v.findViewById(R.id.gridView);
+        gridView.setAdapter(new ImageAdapter(getActivity().getApplicationContext(), crimePhotos));
+
+        return v;
     }
 
     @Override
