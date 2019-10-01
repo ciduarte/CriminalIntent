@@ -1,6 +1,6 @@
 package com.bignerdranch.android.criminalintent.database;
 
-public class ImageDbSchema {
+public class  ImageDbSchema {
     public static final class ImageTable{
         public static final String NAME = "images";
 
