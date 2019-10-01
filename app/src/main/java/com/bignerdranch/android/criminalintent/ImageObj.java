@@ -29,6 +29,6 @@ public class ImageObj {
         return this.date
     }
 
-    public 
+    public
 
 }
