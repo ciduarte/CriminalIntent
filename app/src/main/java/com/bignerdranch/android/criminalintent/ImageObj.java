@@ -8,6 +8,8 @@ public class ImageObj {
     private UUID crimeId;
     private Bitmap thumbnail;
     private Date date;
+    private String path;
+    private String facePath;
 
     public ImageObj(UUID id, Bitmap thumbnail){
         this.crimeId = id;
@@ -33,8 +35,16 @@ public class ImageObj {
         this.date = date;
     }
 
+    public String getPath() {
+        return path;
+    }
+
     public void setPath(String path) {
         this.path = path;
+    }
+
+    public String getFacePath() {
+        return facePath;
     }
 
     public void setFacePath(String facePath) {

@@ -49,6 +49,7 @@ public class CrimeFragment extends Fragment {
     private Button mSuspectButton;
     private ImageButton mPhotoButton;
     private ImageView mPhotoView;
+    private Button mGalleryButton;
 
     public static CrimeFragment newInstance(UUID crimeId) {
         Bundle args = new Bundle();
@@ -110,6 +111,15 @@ public class CrimeFragment extends Fragment {
                 dialog.setTargetFragment(CrimeFragment.this, REQUEST_DATE);
                 dialog.show(manager, DIALOG_DATE);
             }
+        });
+
+        mGalleryButton = (Button) v.findViewById(R.id.crime_gallery);
+        mGalleryButton.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick (View v) {
+               Intent intent = CrimeGalleryActivity.newIntent(getActivity(), mCrime.getId());
+               startActivity(intent);
+           }
         });
 
         mSolvedCheckbox = (CheckBox) v.findViewById(R.id.crime_solved);
