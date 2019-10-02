@@ -59,30 +59,15 @@ public class ImageAdapter extends BaseAdapter {
             imageView = new ImageView(mContext);
             imageView.setLayoutParams(new GridView.LayoutParams(350, 350));
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-//            imageView.setPadding(8, 8, 8, 8);
-//            imageView.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    Toast.makeText(mContext.this, "Selected image", Toast.LENGTH_SHORT).show();
-//                });
-//            });
         } else {
             imageView = (ImageView) convertView;
         }
         detectFace(images.get(position), imageView, true);
-//        imageView.setImageBitmap(images.get(position)); //replace with face detection method
         return imageView;
     }
 
-    // face detection method will go here
     private void detectFace(Bitmap bitmap, ImageView v, boolean faceDetectionChecked) {
         if (faceDetectionChecked) {
-
-//            final Paint rectPaint = new Paint();
-////
-////            rectPaint.setStrokeWidth(20);
-////            rectPaint.setColor(Color.RED);
-////            rectPaint.setStyle(Paint.Style.STROKE);
 
             final Bitmap tempBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.RGB_565);
             final Canvas canvas = new Canvas(tempBitmap);
@@ -106,9 +91,6 @@ public class ImageAdapter extends BaseAdapter {
         } else {
             v.setImageBitmap(bitmap);
         }
-//        if (faceDetectionChecked) {
-//            Toast.makeText(mContext, "True", Toast.LENGTH_SHORT).show();
-//        }
     }
 
     private double drawBitmap(Canvas canvas, Bitmap mBitmap, SparseArray<Face> mFaces) {
@@ -131,11 +113,12 @@ public class ImageAdapter extends BaseAdapter {
 
         for (int i = 0; i < mFaces.size(); ++i) {
             Face face = mFaces.valueAt(i);
-            for (Landmark landmark : face.getLandmarks()) {
-                int cx = (int) (landmark.getPosition().x * scale);
-                int cy = (int) (landmark.getPosition().y * scale);
-                canvas.drawCircle(cx, cy, 10, paint);
-            }
+            float x1=face.getPosition().x;
+            float y1=face.getPosition().y;
+            float x2=x1+face.getWidth();
+            float y2=y1+face.getHeight();
+            RectF rectF = new RectF(x1,y1,x2,y2);
+            canvas.drawRoundRect(rectF,2,2,paint);
         }
     }
 }
