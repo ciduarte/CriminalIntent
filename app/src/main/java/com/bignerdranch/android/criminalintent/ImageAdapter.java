@@ -88,6 +88,8 @@ public class ImageAdapter extends BaseAdapter {
                 v.setImageDrawable(new BitmapDrawable(mContext.getResources(), tempBitmap));
             }
 
+            detector.release();
+
         } else {
             v.setImageBitmap(bitmap);
         }
