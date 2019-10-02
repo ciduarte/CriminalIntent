@@ -66,7 +66,7 @@ public class ImageAdapter extends BaseAdapter {
         return imageView;
     }
 
-    private void detectFace(Bitmap bitmap, ImageView v, boolean faceDetectionChecked) {
+    public void detectFace(Bitmap bitmap, ImageView v, boolean faceDetectionChecked) {
         if (faceDetectionChecked) {
 
             final Bitmap tempBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.RGB_565);
