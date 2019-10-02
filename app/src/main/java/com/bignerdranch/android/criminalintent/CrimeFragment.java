@@ -116,7 +116,6 @@ public class CrimeFragment extends Fragment {
         });
 
         mFaceDetectionCheckbox = (CheckBox) v.findViewById(R.id.face_detection);
-//        mFaceDetectionCheckbox = setChecked() // this line is used to say if the face detection box was clicked, click it again... we probably don't need this
         mFaceDetectionCheckbox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -141,8 +140,6 @@ public class CrimeFragment extends Fragment {
                 mCrime.setSolved(isChecked);
             }
         });
-
-
 
         mReportButton = (Button)v.findViewById(R.id.crime_report);
         mReportButton.setOnClickListener(new View.OnClickListener() {

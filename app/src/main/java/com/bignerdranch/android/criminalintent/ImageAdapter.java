@@ -62,7 +62,7 @@ public class ImageAdapter extends BaseAdapter {
         } else {
             imageView = (ImageView) convertView;
         }
-        detectFace(images.get(position), imageView, true);
+        detectFace(images.get(position), imageView, faceDetection);
         return imageView;
     }
 

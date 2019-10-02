@@ -39,8 +39,10 @@ import java.util.UUID;
 
 public class CrimeGalleryFragment extends Fragment {
 
-    private UUID crimeId;
-    private boolean faceDetection;
+    private Crime mCrime;
+//    private File mPhotoFile; // photo file array
+    private UUID mCrimeId;
+    private boolean mFaceDetectionChecked;
     private static final String TAG = "GalleryFragment";
     private ArrayList<Bitmap> crimePhotos = new ArrayList<Bitmap>();
     public Integer[] images = {
@@ -67,15 +69,24 @@ public class CrimeGalleryFragment extends Fragment {
     };
 
     public static CrimeGalleryFragment newInstance(UUID crimeId, boolean faceDetection) {
+        Bundle args = new Bundle();
+        args.putSerializable("CRIME_ID", crimeId);
+        args.putSerializable("FACE_DETECT", faceDetection);
+
         CrimeGalleryFragment fragment = new CrimeGalleryFragment();
-        crimeId = crimeId;
-        faceDetection = faceDetection;
+        fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        UUID crimeId = (UUID) getArguments().getSerializable("CRIME_ID");
+        boolean faceDetection = (boolean) getArguments().getSerializable("FACE_DETECT");
+        mCrimeId = crimeId;
+        mFaceDetectionChecked = faceDetection;
+        mCrime = CrimeLab.get(getActivity()).getCrime(crimeId);
+//        mPhotoFile = CrimeLab.get(getActivity()).getPhotoFile(mCrime); // do something similar to gather all photos
 
         for (int i=0; i<images.length; i++) {
             final Bitmap myBitmap = BitmapFactory.decodeResource(getActivity().getApplicationContext().getResources(),images[i]);
@@ -88,11 +99,7 @@ public class CrimeGalleryFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_crime_gallery, container, false);
 
         GridView gridView = (GridView) v.findViewById(R.id.gridView);
-        gridView.setAdapter(new ImageAdapter(getActivity().getApplicationContext(), crimePhotos, faceDetection));
-
-        if (faceDetection) {
-            Toast.makeText(getActivity().getApplicationContext(), "True", Toast.LENGTH_LONG).show();
-        }
+        gridView.setAdapter(new ImageAdapter(getActivity().getApplicationContext(), crimePhotos, mFaceDetectionChecked));
 
         return v;
     }
