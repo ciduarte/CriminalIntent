@@ -29,6 +29,7 @@ import android.widget.ImageView;
 
 import java.io.File;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 public class CrimeFragment extends Fragment {
@@ -50,6 +51,7 @@ public class CrimeFragment extends Fragment {
     private ImageButton mPhotoButton;
     private ImageView mPhotoView;
     private Button mGalleryButton;
+    private ImageObj image;
 
     public static CrimeFragment newInstance(UUID crimeId) {
         Bundle args = new Bundle();
@@ -63,9 +65,16 @@ public class CrimeFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         UUID crimeId = (UUID) getArguments().getSerializable(ARG_CRIME_ID);
         mCrime = CrimeLab.get(getActivity()).getCrime(crimeId);
         mPhotoFile = CrimeLab.get(getActivity()).getPhotoFile(mCrime);
+        List<ImageObj> images = ImageLab.get(getActivity()).getImages(crimeId);
+        if (images != null && !images.isEmpty()){
+            image = images.get(0);
+        }else{
+            image = null;
+        }
     }
 
     @Override
@@ -186,6 +195,12 @@ public class CrimeFragment extends Fragment {
         });
 
         mPhotoView = (ImageView) v.findViewById(R.id.crime_photo);
+
+        if(image != null){
+            Bitmap bitmap = PictureUtils.getScaledBitmap(image.getPath(), getActivity());
+            mPhotoView.setImageBitmap(bitmap);
+        }
+
         updatePhotoView();
 
         return v;
@@ -267,6 +282,9 @@ public class CrimeFragment extends Fragment {
             Bitmap bitmap = PictureUtils.getScaledBitmap(
                     mPhotoFile.getPath(), getActivity());
             mPhotoView.setImageBitmap(bitmap);
+            ImageObj image = new ImageObj(mCrime.getId(),bitmap);
+            image.setPath(mPhotoFile.getPath());
+            ImageLab.get(getActivity()).addImage(image);
         }
     }
 }

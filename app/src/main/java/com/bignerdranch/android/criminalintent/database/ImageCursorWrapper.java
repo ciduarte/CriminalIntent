@@ -19,7 +19,6 @@ public class ImageCursorWrapper extends CursorWrapper            {
         String uuidString = getString(getColumnIndex(ImageDbSchema.ImageTable.Cols.UUID));
         String path = getString(getColumnIndex(ImageTable.Cols.PATH));
         long date = getLong(getColumnIndex(ImageDbSchema.ImageTable.Cols.DATE));
-        String facePath = getString(getColumnIndex(ImageTable.Cols.FACEPATH));
         byte[] rawThumb = getBlob(getColumnIndex(ImageTable.Cols.THUMBNAIL));
 
         Bitmap thumbnail = BitmapFactory.decodeByteArray(rawThumb, 0, rawThumb.length);
@@ -27,7 +26,6 @@ public class ImageCursorWrapper extends CursorWrapper            {
         ImageObj image = new ImageObj(UUID.fromString(uuidString), thumbnail);
         image.setPath(path);
         image.setDate(new Date(date));
-        image.setFacePath(facePath);
 
         return image;
     }

@@ -22,7 +22,6 @@ public class ImageDBHelper extends SQLiteOpenHelper {
                 " _id integer primary key autoincrement, " +
                 ImageTable.Cols.UUID + ", " +
                 ImageTable.Cols.PATH + ", " +
-                ImageTable.Cols.FACEPATH + ", " +
                 ImageTable.Cols.DATE + ", " +
                 ImageTable.Cols.THUMBNAIL +
                 ")"

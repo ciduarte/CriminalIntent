@@ -58,7 +58,9 @@ public class ImageLab {
         return images;
     }
 
-    public ImageObj getImage(UUID id) {
+    public List<ImageObj> getImages(UUID id) {
+        List<ImageObj> images = new ArrayList<>();
+
         ImageCursorWrapper cursor = queryImages(
                 ImageDbSchema.ImageTable.Cols.UUID + " = ?",
                 new String[] { id.toString() }
@@ -70,10 +72,16 @@ public class ImageLab {
             }
 
             cursor.moveToFirst();
-            return cursor.getImage();
+            while (!cursor.isAfterLast()) {
+                images.add(cursor.getImage());
+                cursor.moveToNext();
+            }
+            return images;
+
         } finally {
             cursor.close();
         }
+
     }
 
 
@@ -84,6 +92,7 @@ public class ImageLab {
         values.put(ImageDbSchema.ImageTable.Cols.UUID, image.getCrimeId().toString());
         values.put(ImageDbSchema.ImageTable.Cols.THUMBNAIL, stream.toByteArray());
         values.put(ImageDbSchema.ImageTable.Cols.DATE, image.getDate().getTime());
+        values.put(ImageDbSchema.ImageTable.Cols.PATH, image.getPath());
 
         return values;
     }
