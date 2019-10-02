@@ -2,6 +2,7 @@ package com.bignerdranch.android.criminalintent;
 
 import java.util.*;
 import android.widget.BaseAdapter;
+import android.app.Activity;
 import android.widget.ImageView;
 import android.widget.GridView;
 import android.widget.Toast;
@@ -10,12 +11,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.SparseArray;
+import com.google.android.gms.vision.Detector;
+import com.google.android.gms.vision.Frame;
+import com.google.android.gms.vision.face.Face;
+import com.google.android.gms.vision.face.FaceDetector;
+import com.google.android.gms.vision.face.Landmark;
+
 
 public class ImageAdapter extends BaseAdapter {
     private ArrayList<Bitmap> images;
@@ -60,7 +69,7 @@ public class ImageAdapter extends BaseAdapter {
         } else {
             imageView = (ImageView) convertView;
         }
-        detectFace(images.get(position), imageView, faceDetection);
+        detectFace(images.get(position), imageView, true);
 //        imageView.setImageBitmap(images.get(position)); //replace with face detection method
         return imageView;
     }
@@ -69,17 +78,17 @@ public class ImageAdapter extends BaseAdapter {
     private void detectFace(Bitmap bitmap, ImageView v, boolean faceDetectionChecked) {
         if (faceDetectionChecked) {
 
-            final Paint rectPaint = new Paint();
+//            final Paint rectPaint = new Paint();
+////
+////            rectPaint.setStrokeWidth(20);
+////            rectPaint.setColor(Color.RED);
+////            rectPaint.setStyle(Paint.Style.STROKE);
 
-            rectPaint.setStrokeWidth(20);
-            rectPaint.setColor(Color.RED);
-            rectPaint.setStyle(Paint.Style.STROKE);
+            final Bitmap tempBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.RGB_565);
+            final Canvas canvas = new Canvas(tempBitmap);
+            canvas.drawBitmap(bitmap, 0, 0, null);
 
-            final Bitmap tempBitmap = Bitmap.createBitmap(inputBitmap.getWidth(),inputBitmap.getHeight(),Bitmap.Config.RGB_565);
-            final Canvas canvas = new Canvas(tempBitMap);
-            canvas.drawBitmap(inputBitmap,0,0,null);
-
-            FaceDetector detector = new FaceDetector.Builder(getApplicationContext())
+            FaceDetector detector = new FaceDetector.Builder(mContext)
                     .setTrackingEnabled(false)
                     .setLandmarkType(FaceDetector.ALL_LANDMARKS)
                     .build();
@@ -89,9 +98,9 @@ public class ImageAdapter extends BaseAdapter {
             SparseArray<Face> faces = detector.detect(frame);
 
             if ((bitmap != null) && (faces != null)) {
-                double scale = drawBitmap(canvas);
-                drawFaceAnnotations(canvas, scale);
-                v.setImageDrawable(new BitmapDrawable(getResources(), tempBitmap))
+                double scale = drawBitmap(canvas, bitmap, faces);
+                drawFaceAnnotations(canvas, scale, faces);
+                v.setImageDrawable(new BitmapDrawable(mContext.getResources(), tempBitmap));
             }
 
         } else {
@@ -102,7 +111,7 @@ public class ImageAdapter extends BaseAdapter {
 //        }
     }
 
-    private double drawBitmap(Canvas canvas) {
+    private double drawBitmap(Canvas canvas, Bitmap mBitmap, SparseArray<Face> mFaces) {
         double viewWidth = canvas.getWidth();
         double viewHeight = canvas.getHeight();
         double imageWidth = mBitmap.getWidth();
@@ -114,9 +123,9 @@ public class ImageAdapter extends BaseAdapter {
         return scale;
     }
 
-    private void drawFaceAnnotations(Canvas canvas, double scale) {
+    private void drawFaceAnnotations(Canvas canvas, double scale, SparseArray<Face> mFaces) {
         Paint paint = new Paint();
-        paint.setColor(Color.GREEN);
+        paint.setColor(Color.RED);
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(10);
 
