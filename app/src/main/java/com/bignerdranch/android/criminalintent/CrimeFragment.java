@@ -50,6 +50,8 @@ public class CrimeFragment extends Fragment {
     private ImageButton mPhotoButton;
     private ImageView mPhotoView;
     private Button mGalleryButton;
+    private CheckBox mFaceDetectionCheckbox;
+    public boolean mDetectionChecked;
 
     public static CrimeFragment newInstance(UUID crimeId) {
         Bundle args = new Bundle();
@@ -113,11 +115,20 @@ public class CrimeFragment extends Fragment {
             }
         });
 
+        mFaceDetectionCheckbox = (CheckBox) v.findViewById(R.id.face_detection);
+//        mFaceDetectionCheckbox = setChecked() // this line is used to say if the face detection box was clicked, click it again... we probably don't need this
+        mFaceDetectionCheckbox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                mDetectionChecked = isChecked;
+            }
+        });
+
         mGalleryButton = (Button) v.findViewById(R.id.crime_gallery);
         mGalleryButton.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick (View v) {
-               Intent intent = CrimeGalleryActivity.newIntent(getActivity(), mCrime.getId());
+               Intent intent = CrimeGalleryActivity.newIntent(getActivity(), mCrime.getId(), mDetectionChecked);
                startActivity(intent);
            }
         });
@@ -130,6 +141,8 @@ public class CrimeFragment extends Fragment {
                 mCrime.setSolved(isChecked);
             }
         });
+
+
 
         mReportButton = (Button)v.findViewById(R.id.crime_report);
         mReportButton.setOnClickListener(new View.OnClickListener() {

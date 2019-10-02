@@ -26,6 +26,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
+import android.widget.Toast;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.GridView;
@@ -38,6 +39,8 @@ import java.util.UUID;
 
 public class CrimeGalleryFragment extends Fragment {
 
+    private UUID crimeId;
+    private boolean faceDetection;
     private static final String TAG = "GalleryFragment";
     private ArrayList<Bitmap> crimePhotos = new ArrayList<Bitmap>();
     public Integer[] images = {
@@ -63,8 +66,10 @@ public class CrimeGalleryFragment extends Fragment {
             R.drawable.image20
     };
 
-    public static CrimeGalleryFragment newInstance() {
+    public static CrimeGalleryFragment newInstance(UUID crimeId, boolean faceDetection) {
         CrimeGalleryFragment fragment = new CrimeGalleryFragment();
+        crimeId = crimeId;
+        faceDetection = faceDetection;
         return fragment;
     }
 
@@ -83,7 +88,11 @@ public class CrimeGalleryFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_crime_gallery, container, false);
 
         GridView gridView = (GridView) v.findViewById(R.id.gridView);
-        gridView.setAdapter(new ImageAdapter(getActivity().getApplicationContext(), crimePhotos));
+        gridView.setAdapter(new ImageAdapter(getActivity().getApplicationContext(), crimePhotos, faceDetection));
+
+        if (faceDetection) {
+            Toast.makeText(getActivity().getApplicationContext(), "True", Toast.LENGTH_LONG).show();
+        }
 
         return v;
     }
