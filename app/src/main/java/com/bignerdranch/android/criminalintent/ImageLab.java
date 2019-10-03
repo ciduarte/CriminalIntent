@@ -58,6 +58,7 @@ public class ImageLab {
         return images;
     }
 
+
     public List<ImageObj> getImages(UUID id) {
         List<ImageObj> images = new ArrayList<>();
 
@@ -84,6 +85,32 @@ public class ImageLab {
 
     }
 
+    public ArrayList<Bitmap> getThumbnails(UUID id) {
+        ArrayList<Bitmap> images = new ArrayList<>();
+
+        ImageCursorWrapper cursor = queryImages(
+                ImageDbSchema.ImageTable.Cols.UUID + " = ?",
+                new String[] { id.toString() }
+        );
+
+        try {
+            if (cursor.getCount() == 0) {
+                return null;
+            }
+
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast()) {
+                images.add((cursor.getImage()).getThumbnail());
+                cursor.moveToNext();
+            }
+            cursor.close();
+            return images;
+
+        } finally {
+            cursor.close();
+        }
+
+    }
 
     private static ContentValues getContentValues(ImageObj image) {
         ContentValues values = new ContentValues();

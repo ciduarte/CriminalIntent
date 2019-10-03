@@ -27,6 +27,20 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
+import android.graphics.RectF;
+import android.util.AttributeSet;
+import android.util.SparseArray;
+import com.google.android.gms.vision.Detector;
+import com.google.android.gms.vision.Frame;
+import com.google.android.gms.vision.face.Face;
+import com.google.android.gms.vision.face.FaceDetector;
+import com.google.android.gms.vision.face.Landmark;
+
 import java.io.File;
 import java.util.Date;
 import java.util.List;
@@ -51,8 +65,9 @@ public class CrimeFragment extends Fragment {
     private ImageButton mPhotoButton;
     private ImageView mPhotoView;
     private Button mGalleryButton;
+    private CheckBox mFaceDetectionCheckbox;
+    public boolean mDetectionChecked;
     private ImageObj image;
-
     public static CrimeFragment newInstance(UUID crimeId) {
         Bundle args = new Bundle();
         args.putSerializable(ARG_CRIME_ID, crimeId);
@@ -122,11 +137,20 @@ public class CrimeFragment extends Fragment {
             }
         });
 
+        mFaceDetectionCheckbox = (CheckBox) v.findViewById(R.id.face_detection);
+        mFaceDetectionCheckbox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                mDetectionChecked = isChecked;
+                updatePhotoView();
+            }
+        });
+
         mGalleryButton = (Button) v.findViewById(R.id.crime_gallery);
         mGalleryButton.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick (View v) {
-               Intent intent = CrimeGalleryActivity.newIntent(getActivity(), mCrime.getId());
+               Intent intent = CrimeGalleryActivity.newIntent(getActivity(), mCrime.getId(), mDetectionChecked);
                startActivity(intent);
            }
         });
@@ -281,10 +305,67 @@ public class CrimeFragment extends Fragment {
         } else {
             Bitmap bitmap = PictureUtils.getScaledBitmap(
                     mPhotoFile.getPath(), getActivity());
-            mPhotoView.setImageBitmap(bitmap);
-            ImageObj image = new ImageObj(mCrime.getId(),bitmap);
-            image.setPath(mPhotoFile.getPath());
-            ImageLab.get(getActivity()).addImage(image);
+            detectFace(bitmap, mPhotoView, mDetectionChecked);
+//            mPhotoView.setImageBitmap(bitmap);
+            ImageObj place = new ImageObj(mCrime.getId(), bitmap);
+            place.setPath(mPhotoFile.getPath());
+            ImageLab.get(getActivity()).addImage(place);
+        }
+    }
+
+    public void detectFace(Bitmap bitmap, ImageView v, boolean faceDetectionChecked) {
+        if (faceDetectionChecked) {
+
+            final Bitmap tempBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.RGB_565);
+            final Canvas canvas = new Canvas(tempBitmap);
+            canvas.drawBitmap(bitmap, 0, 0, null);
+
+            FaceDetector detector = new FaceDetector.Builder(getActivity().getApplicationContext())
+                    .setTrackingEnabled(false)
+                    .setLandmarkType(FaceDetector.ALL_LANDMARKS)
+                    .build();
+
+            // Create a frame from the bitmap and run face detection on the frame.
+            Frame frame = new Frame.Builder().setBitmap(bitmap).build();
+            SparseArray<Face> faces = detector.detect(frame);
+
+            if ((bitmap != null) && (faces != null)) {
+                double scale = drawBitmap(canvas, bitmap, faces);
+                drawFaceAnnotations(canvas, scale, faces);
+                v.setImageDrawable(new BitmapDrawable(getActivity().getApplicationContext().getResources(), tempBitmap));
+            }
+
+        } else {
+            v.setImageBitmap(bitmap);
+        }
+    }
+
+    private double drawBitmap(Canvas canvas, Bitmap mBitmap, SparseArray<Face> mFaces) {
+        double viewWidth = canvas.getWidth();
+        double viewHeight = canvas.getHeight();
+        double imageWidth = mBitmap.getWidth();
+        double imageHeight = mBitmap.getHeight();
+        double scale = Math.min(viewWidth / imageWidth, viewHeight / imageHeight);
+
+        Rect destBounds = new Rect(0, 0, (int)(imageWidth * scale), (int)(imageHeight * scale));
+        canvas.drawBitmap(mBitmap, null, destBounds, null);
+        return scale;
+    }
+
+    private void drawFaceAnnotations(Canvas canvas, double scale, SparseArray<Face> mFaces) {
+        Paint paint = new Paint();
+        paint.setColor(Color.RED);
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeWidth(20);
+
+        for (int i = 0; i < mFaces.size(); ++i) {
+            Face face = mFaces.valueAt(i);
+            float x1=face.getPosition().x;
+            float y1=face.getPosition().y;
+            float x2=x1+face.getWidth();
+            float y2=y1+face.getHeight();
+            RectF rectF = new RectF(x1,y1,x2,y2);
+            canvas.drawRoundRect(rectF,2,2,paint);
         }
     }
 }

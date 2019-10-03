@@ -16,10 +16,10 @@ public class CrimeGalleryActivity extends AppCompatActivity {
     private static final String EXTRA_CRIME_ID =
             "com.bignerdranch.android.criminalintent.crime_id";
 
-    private ViewPager mViewPager;
-
-    public static Intent newIntent(Context packageContext, UUID crimeId) {
+    public static Intent newIntent(Context packageContext, UUID crimeId, boolean detectionChecked) {
         Intent intent = new Intent(packageContext, CrimeGalleryActivity.class);
+        intent.putExtra(EXTRA_CRIME_ID, crimeId);
+        intent.putExtra("FACE_DETECT", detectionChecked);
         return intent;
     }
 
@@ -28,8 +28,13 @@ public class CrimeGalleryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fragment);
 
+        UUID crimeId = (UUID) getIntent()
+                .getSerializableExtra(EXTRA_CRIME_ID);
+
+        boolean faceDetection = (boolean) getIntent().getExtras().getBoolean("FACE_DETECT");
+
         FragmentManager manager = getSupportFragmentManager();
-        CrimeGalleryFragment fragment = CrimeGalleryFragment.newInstance();
+        CrimeGalleryFragment fragment = CrimeGalleryFragment.newInstance(crimeId, faceDetection);
         manager.beginTransaction()
                 .add(R.id.fragment_container, fragment)
                 .commit();
